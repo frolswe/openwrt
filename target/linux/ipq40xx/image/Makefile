@@ -193,6 +193,32 @@ define Device/compex_wpj428
 endef
 TARGET_DEVICES += compex_wpj428
 
+define Device/dlink_dap-2610
+	$(call Device/FitImageLzma)
+	DEVICE_VENDOR := D-Link
+	DEVICE_MODEL := DAP-2610
+	DEVICE_DTS := qcom-ipq4018-dlink-dap-2610
+	DEVICE_DTS_CONFIG := config@ap.dk01.1-c1
+	WRGG_DEVNAME := /dev/mtdblock/8
+	WRGG_SIGNATURE := wapac30_dkbs_dap2610
+	IMAGE_SIZE := 14080k
+	IMAGES := sysupgrade.bin factory.bin
+	# Bootloader expects a special 160 byte header which is updated by
+	# wrgg-image.
+	# Factory image size must be larger than 6MB, and size in wrgg header must
+	# match actual factory image size to be flashable from D-Link http server.
+	# Bootloader verifies checksum of wrgg image before booting, thus jffs2
+	# cannot be part of the wrgg image. This is solved in the factory image by
+	# having the rootfs at the end of the image (without pad-rootfs). And in
+	# the sysupgrade image only the kernel is included in the wrgg checksum,
+	# but this is not flashable from the D-link http server.
+	# append-rootfs must start on an erase block boundary.
+	IMAGE/factory.bin    := pad-to 160 | append-kernel | pad-to 6M | append-rootfs | wrgg-image | check-size $$$$(IMAGE_SIZE)
+	IMAGE/sysupgrade.bin := pad-to 160 | append-kernel | wrgg-image | pad-to 64k | append-rootfs | pad-rootfs | check-size $$$$(IMAGE_SIZE) | append-metadata
+	DEVICE_PACKAGES := ipq-wifi-dlink_dap2610
+endef
+TARGET_DEVICES += dlink_dap-2610
+
 define Device/engenius_eap1300
 	$(call Device/FitImage)
 	DEVICE_VENDOR := EnGenius

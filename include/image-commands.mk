@@ -355,6 +355,21 @@ define Build/tplink-v2-image
 	rm -rf $@.new
 endef
 
+# Overwrite the first 160 bytes of the image with an wrgg header.
+# Make room for this header by building the image with e.g. "pad-to 160 | append-kernel | ..." 
+define Build/wrgg-image
+	dd if=$@ of=$@.new iflag=skip_bytes skip=160
+	mkwrggimg -i $@.new \
+	-o $@.new2 \
+	-d "$(WRGG_DEVNAME)" \
+	-s "$(WRGG_SIGNATURE)" \
+	-v "$(WRGG_VERSION)" \
+	-m "$(WRGG_MODEL)" \
+	-B "$(WRGG_BUILDNO)"
+	rm -f $@.new
+	mv $@.new2 $@
+endef
+
 json_quote=$(subst ','\'',$(subst ",\",$(1)))
 #")')
 metadata_devices=$(if $(1),$(subst "$(space)","$(comma)",$(strip $(foreach v,$(1),"$(call json_quote,$(v))"))))

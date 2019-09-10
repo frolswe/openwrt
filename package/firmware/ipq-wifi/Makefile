@@ -22,9 +22,13 @@ endef
 # You can find instructions and examples on the linux-wireless wiki:
 # <https://wireless.wiki.kernel.org/en/users/drivers/ath10k/boardfiles>
 #
+# Use ath10k-bdencoder from https://github.com/qca/qca-swiss-army-knife.git
+# to generate the board-* files here.
+#
 
 ALLWIFIBOARDS:= \
 	avm_fritzrepeater-1200 \
+	dlink_dap2610 \
 	linksys_ea8300 \
 	qxwlan_e2600ac
 
@@ -90,6 +94,7 @@ endef
 # Add $(eval $(call generate-ipq-wifi-package,<devicename>,<display name>))
 
 $(eval $(call generate-ipq-wifi-package,avm_fritzrepeater-1200,AVM FRITZRepeater 1200))
+$(eval $(call generate-ipq-wifi-package,dlink_dap2610,D-Link DAP-2610))
 $(eval $(call generate-ipq-wifi-package,linksys_ea8300,Linksys EA8300))
 $(eval $(call generate-ipq-wifi-package,qxwlan_e2600ac,Qxwlan E2600AC))
 

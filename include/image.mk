@@ -181,7 +181,11 @@ ifeq ($(strip $(call kernel_patchver_ge,4.18.0)),1)
 endif
 
 define Image/pad-to
-	dd if=$(1) of=$(1).new bs=$(2) conv=sync
+	if [ -e $(1) ]; then \
+		dd if=$(1) of=$(1).new bs=$(2) conv=sync; \
+	else \
+		dd if=/dev/zero of=$(1).new bs=$(2) count=1 conv=sync; \
+	fi; \
 	mv $(1).new $(1)
 endef
 
